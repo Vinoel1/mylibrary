@@ -28,6 +28,20 @@ def db_close(conn, cur):
         conn.close()
         print('Database connection closed.')
 
+def check_book_in_db(conn, cur, isbn):
+    """ Check if the ISBN given by the user matches a book that is already
+    in the database """
+    sql = """SELECT * FROM books WHERE isbn = %s;"""
+    try:
+        cur.execute(sql, (isbn,))
+        row = cur.fetchone()
+        if row is not None:
+            print(f"Book with ISBN {isbn} is already present in the database")
+            print("About this book:")
+            print(row)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
 def add_book(conn, cur, book_data):
     """ Add a book to the database """
     sql = """INSERT INTO books VALUES(%s, %s, %s, %s);"""
@@ -35,7 +49,7 @@ def add_book(conn, cur, book_data):
         cur.execute(
             sql, (
                 book_data['isbn'], book_data['title'],
-                book_data['read'], book_data['rating'],
+                book_data['read'], book_data['rating']
                 )
             )
         conn.commit()
@@ -48,7 +62,12 @@ def add_book(conn, cur, book_data):
 def add_author():
     """ Add an author to the database """
     sql = """INSERT INTO authors(name) VALUES(%s);"""
+    # TODO
 
 def add_book_author():
     """  """
+    # TODO
     
+def modify_info():
+    """  """
+    # TODO

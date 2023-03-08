@@ -12,7 +12,8 @@ while True:
     isbn = input('Enter a 10 or 13 digit ISBN: ').strip()
     # Test ISBN
     # isbn = '9782075062824'
-    response = urlopen(api + isbn)
+    manage_database.check_book_in_db(conn, cur, isbn)
+    """response = urlopen(api + isbn)
     # Store JSON response in a dictionary
     data_raw = json.load(response)
     # print(data_raw)
@@ -40,7 +41,7 @@ while True:
         print("The following information has been added to the database:")
         print(book_data)
 
-    # Ask user if they would like to add another book
+    # Ask user if they would like to add another book"""
     while True:
         user_update = input(
             'Would you like to enter another ISBN? yes or no '
