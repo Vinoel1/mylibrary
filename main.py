@@ -11,7 +11,7 @@ while True:
     api = 'https://www.googleapis.com/books/v1/volumes?q=isbn:'
     # isbn = input('Enter a 10 or 13 digit ISBN: ').strip()
     # Test ISBN
-    isbn = '9782823872118'
+    isbn = '9782075062824'
     response = urlopen(api + isbn)
     # Store JSON response in a dictionary
     data_raw = json.load(response)

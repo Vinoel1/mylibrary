@@ -9,7 +9,7 @@ def create_tables():
             isbn VARCHAR(13),
             title VARCHAR(200) NOT NULL,
             read BOOLEAN NOT NULL,
-            rating INTEGER NOT NULL,
+            rating INTEGER,
             PRIMARY KEY(isbn)
         )
         """,
