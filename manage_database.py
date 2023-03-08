@@ -31,13 +31,19 @@ def db_close(conn, cur):
 def add_book(conn, cur, book_data):
     """ Add a book to the database """
     sql = """INSERT INTO books VALUES(%s, %s, %s, %s);"""
-    cur.execute(
-        sql, (
-            book_data['isbn'], book_data['title'],
-            book_data['read'], book_data['rating'],
+    try:
+        cur.execute(
+            sql, (
+                book_data['isbn'], book_data['title'],
+                book_data['read'], book_data['rating'],
+                )
             )
-        )
-    conn.commit()
+        conn.commit()
+        return 1
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        print("The book could not be added to the database")
+        return 0
 
 def add_author():
     """ Add an author to the database """

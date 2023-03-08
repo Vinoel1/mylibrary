@@ -9,9 +9,9 @@ conn, cur = manage_database.db_connect()
 while True:
     # Send a request to the Google Books API
     api = 'https://www.googleapis.com/books/v1/volumes?q=isbn:'
-    # isbn = input('Enter a 10 or 13 digit ISBN: ').strip()
+    isbn = input('Enter a 10 or 13 digit ISBN: ').strip()
     # Test ISBN
-    isbn = '9782075062824'
+    # isbn = '9782075062824'
     response = urlopen(api + isbn)
     # Store JSON response in a dictionary
     data_raw = json.load(response)
@@ -35,7 +35,10 @@ while True:
         book_data['rating'] = None
 
     # Add book to the database
-    manage_database.add_book(conn, cur, book_data)
+    book_added = manage_database.add_book(conn, cur, book_data)
+    if book_added:
+        print("The following information has been added to the database:")
+        print(book_data)
 
     # Ask user if they would like to add another book
     while True:
@@ -49,7 +52,6 @@ while True:
 
     # Print collected information and break out of the loop
     if user_update == 'no':
-        print(book_data)
         break
 
 # Close communication with the database
