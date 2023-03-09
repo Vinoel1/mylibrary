@@ -1,6 +1,6 @@
 import json
 from urllib.request import urlopen
-import book_info_user
+import book_info
 import manage_database
 
 # Connect to the database
@@ -30,23 +30,18 @@ while True:
         if user_update == 'yes':
             # Ask user if they have read the book
             # If they have, then ask for a rating and store in book_data
-            book_data = book_info_user.ask_if_read_and_rate(book_data)
+            book_data = book_info.ask_if_read_and_rate(book_data)
             # TODO call modify_book_info
     else:
         response = urlopen(api + isbn)
         # Store JSON response in a dictionary
         data_raw = json.load(response)
-
         # Store title and authors information in book_data dictionnary
-        volume_info = data_raw['items'][0]['volumeInfo']
-        title = volume_info['title']
-        authors = volume_info['authors']
-        prettify_author = authors if len(authors) > 1 else authors[0]
-        book_data = {'isbn': isbn, 'title': title, 'authors': prettify_author}
+        book_data = book_info.parse_raw(isbn, data_raw)
 
         # Ask user if they have read the book
         # If they have, then ask for a rating and store in book_data
-        book_data = book_info_user.ask_if_read_and_rate(book_data)
+        book_data = book_info.ask_if_read_and_rate(book_data)
 
         # Add book to the database
         book_added = manage_database.add_book(conn, book_data)
