@@ -59,11 +59,13 @@ def add_book(conn, book_data):
             )
         conn.commit()
         cur.close()
-        return 1
+        
+        # Print collected information
+        print("The following information has been added to the database:")
+        print(book_data)
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         print("The book could not be added to the database")
-        return 0
 
 def add_author():
     """ Add an author to the database """

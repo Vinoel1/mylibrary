@@ -50,10 +50,6 @@ while True:
 
         # Add book to the database
         book_added = manage_database.add_book(conn, book_data)
-        # Print collected information
-        if book_added:
-            print("The following information has been added to the database:")
-            print(book_data)
 
     # Ask user if they would like to add another book
     while True:
