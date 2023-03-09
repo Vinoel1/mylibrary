@@ -1,10 +1,10 @@
 import psycopg2
+import psycopg2.extras
 from config import config
 
 def db_connect():
     """ Connect to the PostgreSQL database server """
     conn = None
-    cur = None
     try:
         # Read connection parameters
         params = config()
@@ -12,29 +12,26 @@ def db_connect():
         # connect to the PostgreSQL server
         print('Connecting to the database...')
         conn = psycopg2.connect(**params)
-		
-        # Create a cursor
-        cur = conn.cursor()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         
-    return conn, cur
+    return conn
 
-def db_close(conn, cur):
+def db_close(conn):
     """ Close communication with the database """
-    if cur is not None:
-        cur.close()
     if conn is not None:
         conn.close()
         print('Database connection closed.')
 
-def check_book_in_db(conn, cur, isbn):
+def check_book_in_db(conn, isbn):
     """ Check if the ISBN given by the user matches a book that is already
     in the database """
     sql = """SELECT * FROM books WHERE isbn = %s;"""
     try:
+        cur = conn.cursor(cursor_factory = psycopg2.extras.DictCursor)
         cur.execute(sql, (isbn,))
         row = cur.fetchone()
+        cur.close()
 
         # The book is already in the database, print and return the row
         if row is not None:
@@ -49,10 +46,11 @@ def check_book_in_db(conn, cur, isbn):
         print(error)
         return None
 
-def add_book(conn, cur, book_data):
+def add_book(conn, book_data):
     """ Add a book to the database """
     sql = """INSERT INTO books VALUES(%s, %s, %s, %s);"""
     try:
+        cur = conn.cursor()
         cur.execute(
             sql, (
                 book_data['isbn'], book_data['title'],
@@ -60,6 +58,7 @@ def add_book(conn, cur, book_data):
                 )
             )
         conn.commit()
+        cur.close()
         return 1
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)

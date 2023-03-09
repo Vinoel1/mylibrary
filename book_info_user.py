@@ -1,7 +1,9 @@
 def has_been_read():
     """ Ask user if they have read the book then return the answer"""
     while True:
-        read_status = input('Have you read this book? true or false ').lower().strip()
+        read_status = input(
+            'Have you read this book? true or false '
+            ).lower().strip()
 
         # Stop asking when the answer is 'true' or 'false'
         if read_status == 'true' or read_status == 'false':
@@ -29,3 +31,18 @@ def rate_book():
             break
 
     return rating
+
+def ask_if_read_and_rate(book_data):
+    """ Ask user if they have read the book and if they have,
+    ask for a rating """
+    # Ask user if they have read the book and store the answer
+    book_data['read'] = has_been_read()
+
+    # If the book has been read, ask for a rating
+    if book_data['read'] == 'true':
+        book_data['rating'] = rate_book()
+    # If the book has not been read, set rating to None
+    else:
+        book_data['rating'] = None
+
+    return book_data

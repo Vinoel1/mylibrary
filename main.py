@@ -4,7 +4,7 @@ import book_info_user
 import manage_database
 
 # Connect to the database
-conn, cur = manage_database.db_connect()
+conn = manage_database.db_connect()
 
 while True:
     # Send a request to the Google Books API
@@ -12,7 +12,7 @@ while True:
     isbn = input('Enter a 10 or 13 digit ISBN: ').strip()
     # Test ISBN
     # isbn = '9782075062824'
-    book_data = manage_database.check_book_in_db(conn, cur, isbn)
+    book_data = manage_database.check_book_in_db(conn, isbn)
 
     if book_data is not None:
         # Ask user if they would like to modify their info about this book
@@ -28,15 +28,9 @@ while True:
         
         # Modify read status and rating in the database
         if user_update == 'yes':
-            # Add user if they have read the book and store the answer
-            book_data['read'] = book_info_user.has_been_read()
-
-            # If the book has been read, ask for a rating
-            if book_data['read'] == 'true':
-                book_data['rating'] = book_info_user.rate_book()
-            # If the book has not been read, set rating to None
-            else:
-                book_data['rating'] = None
+            # Ask user if they have read the book
+            # If they have, then ask for a rating and store in book_data
+            book_data = book_info_user.ask_if_read_and_rate(book_data)
             # TODO call modify_book_info
     else:
         response = urlopen(api + isbn)
@@ -50,18 +44,12 @@ while True:
         prettify_author = authors if len(authors) > 1 else authors[0]
         book_data = {'isbn': isbn, 'title': title, 'authors': prettify_author}
 
-        # Add user if they have read the book and store the answer
-        book_data['read'] = book_info_user.has_been_read()
-
-        # If the book has been read, ask for a rating
-        if book_data['read'] == 'true':
-            book_data['rating'] = book_info_user.rate_book()
-        # If the book has not been read, set rating to None
-        else:
-            book_data['rating'] = None
+        # Ask user if they have read the book
+        # If they have, then ask for a rating and store in book_data
+        book_data = book_info_user.ask_if_read_and_rate(book_data)
 
         # Add book to the database
-        book_added = manage_database.add_book(conn, cur, book_data)
+        book_added = manage_database.add_book(conn, book_data)
         # Print collected information
         if book_added:
             print("The following information has been added to the database:")
@@ -82,4 +70,4 @@ while True:
         break
 
 # Close communication with the database
-manage_database.db_close(conn, cur)
+manage_database.db_close(conn)
