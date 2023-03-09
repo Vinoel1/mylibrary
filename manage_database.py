@@ -35,12 +35,19 @@ def check_book_in_db(conn, cur, isbn):
     try:
         cur.execute(sql, (isbn,))
         row = cur.fetchone()
+
+        # The book is already in the database, print and return the row
         if row is not None:
             print(f"Book with ISBN {isbn} is already present in the database")
             print("About this book:")
             print(row)
+            return row
+        # The book is not in the database
+        else:
+            return None
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        return None
 
 def add_book(conn, cur, book_data):
     """ Add a book to the database """
@@ -68,6 +75,6 @@ def add_book_author():
     """  """
     # TODO
     
-def modify_info():
+def modify_book_info():
     """  """
     # TODO
