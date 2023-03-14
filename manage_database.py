@@ -76,6 +76,22 @@ def add_book_author():
     """  """
     # TODO
     
-def modify_book_info():
-    """  """
-    # TODO
+def modify_book_info(conn, book_data):
+    """ Modify user information on a book (read status and rating) """
+    sql = """UPDATE books SET read = %s, rating = %s WHERE isbn = %s;"""
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            sql, (
+                book_data['read'], book_data['rating'], book_data['isbn']
+                )
+            )
+        conn.commit()
+        cur.close()
+        
+        # Print collected information
+        print("The following information has been added to the database:")
+        print(book_data)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        print("The information about this book could not be modified")

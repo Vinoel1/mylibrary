@@ -31,7 +31,8 @@ while True:
             # Ask user if they have read the book
             # If they have, then ask for a rating and store in book_data
             book_data = book_info.ask_if_read_and_rate(book_data)
-            # TODO call modify_book_info
+            # Modify information in the database
+            manage_database.modify_book_info(conn, book_data)
     else:
         response = urlopen(api + isbn)
         # Store JSON response in a dictionary
