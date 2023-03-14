@@ -95,3 +95,17 @@ def modify_book_info(conn, book_data):
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         print("The information about this book could not be modified")
+
+def delete_book_info(conn, isbn):
+    """ Delete a book from the database """
+    sql = """DELETE FROM books WHERE isbn = %s;"""
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (isbn,))
+        conn.commit()
+        cur.close()
+        
+        print("The book has been successfully deleted")
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        print("The book could not be deleted")

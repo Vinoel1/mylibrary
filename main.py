@@ -17,22 +17,36 @@ while True:
     if book_data is not None:
         # Ask user if they would like to modify their info about this book
         while True:
-            user_update = input(
+            modify_book = input(
                 'Would you like to modify the information you gave on this '
                 'book? yes or no '
                 ).lower().strip()
 
             # Stop asking when the answer is 'yes' or 'no'
-            if user_update == 'yes' or user_update == 'no':
+            if modify_book == 'yes' or modify_book == 'no':
                 break
         
-        # Modify read status and rating in the database
-        if user_update == 'yes':
+        if modify_book == 'yes':
             # Ask user if they have read the book
             # If they have, then ask for a rating and store in book_data
             book_data = book_info.ask_if_read_and_rate(book_data)
             # Modify information in the database
             manage_database.modify_book_info(conn, book_data)
+        else:
+            # Ask user if they would like to delete this book from the database
+            while True:
+                delete_book = input(
+                    'Would you like to delete this book from the database? '
+                    'yes or no '
+                    ).lower().strip()
+
+                # Stop asking when the answer is 'yes' or 'no'
+                if delete_book == 'yes' or delete_book == 'no':
+                    break
+            
+            # Delete book from the database
+            if delete_book == 'yes':
+                manage_database.delete_book_info(conn, isbn)
     else:
         response = urlopen(api + isbn)
         # Store JSON response in a dictionary
