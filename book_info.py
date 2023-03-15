@@ -2,11 +2,12 @@ def parse_raw(isbn, data_raw):
     """ Store title and authors information in book_data dictionnary """
     volume_info = data_raw['items'][0]['volumeInfo']
     title = volume_info['title']
-    authors = volume_info['authors']
-    prettify_author = authors if len(authors) > 1 else authors[0]
+    authors_raw = volume_info['authors']
+    authors = authors_raw if len(authors_raw) > 1 else authors_raw[0]
+    authors = authors.title()
     book_data = {'isbn': isbn, 'title': title}
 
-    return book_data, prettify_author
+    return book_data, authors
 
 def has_been_read():
     """ Ask user if they have read the book then return the answer"""

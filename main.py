@@ -60,7 +60,10 @@ while True:
 
         # Add book and authors to the database
         manage_database.add_book(conn, book_data)
-        manage_database.add_author(conn, authors)
+        # Check if the authors are already in the database
+        author_in_db = manage_database.check_author_in_db(conn, authors)
+        if author_in_db == 0:
+            manage_database.add_author(conn, authors)
 
     # Ask user if they would like to add another book
     while True:

@@ -46,6 +46,25 @@ def check_book_in_db(conn, isbn):
         print(error)
         return None
 
+def check_author_in_db(conn, authors):
+    """ Check if the authors are already in the database """
+    sql = """SELECT * FROM authors WHERE name = %s;"""
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (authors,))
+        row = cur.fetchone()
+        cur.close()
+
+        # The author is already in the database, print and return the row
+        if row is not None:
+            return 1
+        # The author is not in the database
+        else:
+            return 0
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        return None
+
 def add_book(conn, book_data):
     """ Add a book to the database """
     sql = """INSERT INTO books VALUES(%s, %s, %s, %s);"""
@@ -82,7 +101,7 @@ def add_author(conn, authors):
         print(error)
         print(f"{authors} could not be added to the database")
 
-def add_book_author():
+def add_book_authors():
     """  """
     # TODO
     
