@@ -52,14 +52,15 @@ while True:
         # Store JSON response in a dictionary
         data_raw = json.load(response)
         # Store title and authors information in book_data dictionnary
-        book_data = book_info.parse_raw(isbn, data_raw)
+        book_data, authors = book_info.parse_raw(isbn, data_raw)
 
         # Ask user if they have read the book
         # If they have, then ask for a rating and store in book_data
         book_data = book_info.ask_if_read_and_rate(book_data)
 
-        # Add book to the database
-        book_added = manage_database.add_book(conn, book_data)
+        # Add book and authors to the database
+        manage_database.add_book(conn, book_data)
+        manage_database.add_author(conn, authors)
 
     # Ask user if they would like to add another book
     while True:

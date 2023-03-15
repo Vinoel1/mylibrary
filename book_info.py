@@ -4,9 +4,9 @@ def parse_raw(isbn, data_raw):
     title = volume_info['title']
     authors = volume_info['authors']
     prettify_author = authors if len(authors) > 1 else authors[0]
-    book_data = {'isbn': isbn, 'title': title, 'authors': prettify_author}
+    book_data = {'isbn': isbn, 'title': title}
 
-    return book_data
+    return book_data, prettify_author
 
 def has_been_read():
     """ Ask user if they have read the book then return the answer"""

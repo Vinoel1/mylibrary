@@ -67,10 +67,20 @@ def add_book(conn, book_data):
         print(error)
         print("The book could not be added to the database")
 
-def add_author():
+def add_author(conn, authors):
     """ Add an author to the database """
     sql = """INSERT INTO authors(name) VALUES(%s);"""
-    # TODO
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (authors,))
+        conn.commit()
+        cur.close()
+        
+        # Print collected information
+        print(f"{authors} has been added to the database")
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        print(f"{authors} could not be added to the database")
 
 def add_book_author():
     """  """
