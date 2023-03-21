@@ -59,11 +59,7 @@ while True:
         book_data = book_info.ask_if_read_and_rate(book_data)
 
         # Add book and authors to the database
-        manage_database.add_book(conn, book_data)
-        # Check if the authors are already in the database
-        author_in_db = manage_database.check_author_in_db(conn, authors)
-        if author_in_db == 0:
-            manage_database.add_author(conn, authors)
+        manage_database.add_all_book_info(conn, book_data, authors)
 
     # Ask user if they would like to add another book
     while True:
