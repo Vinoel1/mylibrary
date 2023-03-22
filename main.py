@@ -60,10 +60,15 @@ if conn is not None:
             book_data = book_info.ask_if_read_and_rate(book_data)
 
             # Add book and authors to the database
-            added = manage_database.add_all_book_info(conn, book_data, authors)
+            added = manage_database.add_all_book_info(
+                conn, book_data, authors
+                )
             if added == True:
                 # Print collected information
-                print('The following information has been added to the database:')
+                print(
+                    'The following information has been added to the '
+                    'database:'
+                    )
                 print(book_data)
         else:
             print('Could not check if the book is in the database')
