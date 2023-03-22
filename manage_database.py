@@ -21,7 +21,7 @@ def db_close(conn):
     """ Close communication with the database """
     if conn is not None:
         conn.close()
-        print('Database connection closed.')
+        print('Database connection closed')
 
 def check_book_in_db(conn, isbn):
     """ Check if the ISBN given by the user matches a book that is already
@@ -44,7 +44,7 @@ def check_book_in_db(conn, isbn):
             return None
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
-        return None
+        return 0
 
 def check_author_in_db(conn, authors):
     """ Check if the authors are already in the database """
@@ -131,7 +131,7 @@ def modify_book_info(conn, book_data):
         print(book_data)
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
-        print('The information about this book could not be modified')
+        print('The information could not be modified')
 
 def delete_book_info(conn, isbn):
     """ Delete a book from the database """
