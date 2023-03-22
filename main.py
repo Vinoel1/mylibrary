@@ -19,8 +19,8 @@ if conn is not None:
             # Ask user if they would like to modify their info about this book
             while True:
                 modify_book = input(
-                    'Would you like to modify the information you gave on this '
-                    'book? yes or no '
+                    'Would you like to modify the information you gave on '
+                    'this book? yes or no '
                     ).lower().strip()
 
                 # Stop asking when the answer is 'yes' or 'no'
@@ -34,11 +34,11 @@ if conn is not None:
                 # Modify information in the database
                 manage_database.modify_book_info(conn, book_data)
             else:
-                # Ask user if they would like to delete this book from the database
+                # Ask user if they would like to delete this book
                 while True:
                     delete_book = input(
-                        'Would you like to delete this book from the database? '
-                        'yes or no '
+                        'Would you like to delete this book from the '
+                        'database? yes or no '
                         ).lower().strip()
 
                     # Stop asking when the answer is 'yes' or 'no'
