@@ -46,12 +46,12 @@ def check_book_in_db(conn, isbn):
         print(error)
         return 0
 
-def check_author_in_db(conn, authors):
-    """ Check if the authors are already in the database """
+def check_author_in_db(conn, author):
+    """ Check if the author is already in the database """
     sql = """SELECT author_id FROM authors WHERE name = %s;"""
     try:
         cur = conn.cursor()
-        cur.execute(sql, (authors,))
+        cur.execute(sql, (author,))
         row = cur.fetchone()
         cur.close()
 
@@ -98,20 +98,21 @@ def add_all_book_info(conn, book_data, authors):
     try:
         add_book(conn, book_data)
         # Check if the authors are already in the database
-        author_id = check_author_in_db(conn, authors)
-        # If they are not, add them
-        if author_id == 0:
-            author_id = add_author(conn, authors)
-        add_book_author(conn,  book_data['isbn'], author_id)
+        for author in authors:
+            author_id = check_author_in_db(conn, author)
+            # If they are not, add them
+            if author_id == 0:
+                author_id = add_author(conn, author)
+            add_book_author(conn,  book_data['isbn'], author_id)
+            
         conn.commit()
-
-        # Print collected information
-        print('The following information has been added to the database:')
-        print(book_data)
-        print(f'{authors} has been added to the database')
+        added = True
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         print('The book could not be added to the database')
+        added = False
+    finally:
+        return added
     
 def modify_book_info(conn, book_data):
     """ Modify user information on a book (read status and rating) """

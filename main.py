@@ -54,13 +54,17 @@ if conn is not None:
             data_raw = json.load(response)
             # Store title and authors information in book_data dictionnary
             book_data, authors = book_info.parse_raw(isbn, data_raw)
-
+            
             # Ask user if they have read the book
             # If they have, then ask for a rating and store in book_data
             book_data = book_info.ask_if_read_and_rate(book_data)
 
             # Add book and authors to the database
-            manage_database.add_all_book_info(conn, book_data, authors)
+            added = manage_database.add_all_book_info(conn, book_data, authors)
+            if added == True:
+                # Print collected information
+                print('The following information has been added to the database:')
+                print(book_data)
         else:
             print('Could not check if the book is in the database')
 

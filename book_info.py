@@ -3,8 +3,7 @@ def parse_raw(isbn, data_raw):
     volume_info = data_raw['items'][0]['volumeInfo']
     title = volume_info['title']
     authors_raw = volume_info['authors']
-    authors = authors_raw if len(authors_raw) > 1 else authors_raw[0]
-    authors = authors.title()
+    authors = [author.title() for author in authors_raw]
     book_data = {'isbn': isbn, 'title': title}
 
     return book_data, authors
