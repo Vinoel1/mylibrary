@@ -1,6 +1,10 @@
+""" All functions for handling the database: connection, reading, adding,
+modifying and deleting information """
+
 import psycopg2
 import psycopg2.extras
 from config import config
+
 
 def db_connect():
     """ Connect to the PostgreSQL database server """
@@ -12,16 +16,18 @@ def db_connect():
         # connect to the PostgreSQL server
         print('Connecting to the database...')
         conn = psycopg2.connect(**params)
-    except (Exception, psycopg2.DatabaseError) as error:
+    except psycopg2.Error as error:
         print(error)
-        
+
     return conn
+
 
 def db_close(conn):
     """ Close communication with the database """
     if conn is not None:
         conn.close()
         print('Database connection closed')
+
 
 def check_book_in_db(conn, isbn):
     """ Check if the ISBN given by the user matches a book that is already
@@ -40,11 +46,11 @@ def check_book_in_db(conn, isbn):
             print(row)
             return row
         # The book is not in the database
-        else:
-            return None
-    except (Exception, psycopg2.DatabaseError) as error:
+        return None
+    except psycopg2.Error as error:
         print(error)
         return 0
+
 
 def check_author_in_db(conn, author):
     """ Check if the author is already in the database """
@@ -59,11 +65,11 @@ def check_author_in_db(conn, author):
         if row is not None:
             return row
         # The author is not in the database
-        else:
-            return 0
-    except (Exception, psycopg2.DatabaseError) as error:
+        return 0
+    except psycopg2.Error as error:
         print(error)
         return None
+
 
 def add_book(conn, book_data):
     """ Add a book to the database """
@@ -77,6 +83,7 @@ def add_book(conn, book_data):
         )
     cur.close()
 
+
 def add_author(conn, authors):
     """ Add an author to the database """
     sql = """INSERT INTO authors(name) VALUES(%s) RETURNING author_id;"""
@@ -84,7 +91,9 @@ def add_author(conn, authors):
     cur.execute(sql, (authors,))
     author_id = cur.fetchone()[0]
     cur.close()
+
     return author_id
+
 
 def add_book_author(conn, isbn, author_id):
     """ Add the relation between a book and its authors to the database """
@@ -93,8 +102,10 @@ def add_book_author(conn, isbn, author_id):
     cur.execute(sql, (isbn, author_id))
     cur.close()
 
+
 def add_all_book_info(conn, book_data, authors):
     """ Add a book and its authors to the database """
+    added = False
     try:
         add_book(conn, book_data)
         # Check if the authors are already in the database
@@ -104,16 +115,16 @@ def add_all_book_info(conn, book_data, authors):
             if author_id == 0:
                 author_id = add_author(conn, author)
             add_book_author(conn,  book_data['isbn'], author_id)
-            
+
         conn.commit()
         added = True
-    except (Exception, psycopg2.DatabaseError) as error:
+    except psycopg2.Error as error:
         print(error)
         print('The book could not be added to the database')
-        added = False
-    finally:
-        return added
-    
+
+    return added
+
+
 def modify_book_info(conn, book_data):
     """ Modify user information on a book (read status and rating) """
     sql = """UPDATE books SET read = %s, rating = %s WHERE isbn = %s;"""
@@ -126,13 +137,14 @@ def modify_book_info(conn, book_data):
             )
         conn.commit()
         cur.close()
-        
+
         # Print collected information
         print('The following information has been added to the database:')
         print(book_data)
-    except (Exception, psycopg2.DatabaseError) as error:
+    except psycopg2.Error as error:
         print(error)
         print('The information could not be modified')
+
 
 def delete_book_info(conn, isbn):
     """ Delete a book from the database """
@@ -142,8 +154,8 @@ def delete_book_info(conn, isbn):
         cur.execute(sql, (isbn,))
         conn.commit()
         cur.close()
-        
+
         print('The book has been successfully deleted')
-    except (Exception, psycopg2.DatabaseError) as error:
+    except psycopg2.Error as error:
         print(error)
         print('The book could not be deleted')

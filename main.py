@@ -1,3 +1,6 @@
+""" Fill your personal digital library using Google Books API
+and a PostgreSQL database """
+
 import json
 from urllib.request import urlopen
 import book_info
@@ -24,9 +27,9 @@ if conn is not None:
                     ).lower().strip()
 
                 # Stop asking when the answer is 'yes' or 'no'
-                if modify_book == 'yes' or modify_book == 'no':
+                if modify_book in {'yes', 'no'}:
                     break
-            
+
             if modify_book == 'yes':
                 # Ask user if they have read the book
                 # If they have, then ask for a rating and store in book_data
@@ -44,17 +47,18 @@ if conn is not None:
                     # Stop asking when the answer is 'yes' or 'no'
                     if delete_book == 'yes' or delete_book == 'no':
                         break
-                
+
                 # Delete book from the database
                 if delete_book == 'yes':
                     manage_database.delete_book_info(conn, isbn)
+
         elif book_data is None:
-            response = urlopen(api + isbn)
-            # Store JSON response in a dictionary
-            data_raw = json.load(response)
+            with urlopen(api + isbn) as response:
+                # Store JSON response in a dictionary
+                data_raw = json.load(response)
+
             # Store title and authors information in book_data dictionnary
             book_data, authors = book_info.parse_raw(isbn, data_raw)
-            
             # Ask user if they have read the book
             # If they have, then ask for a rating and store in book_data
             book_data = book_info.ask_if_read_and_rate(book_data)
@@ -63,7 +67,7 @@ if conn is not None:
             added = manage_database.add_all_book_info(
                 conn, book_data, authors
                 )
-            if added == True:
+            if added is True:
                 # Print collected information
                 print(
                     'The following information has been added to the '
@@ -86,8 +90,8 @@ if conn is not None:
         # Break out of the loop
         if user_update == 'no':
             break
-
-        # Close communication with the database
-        manage_database.db_close(conn)
 else:
     print('Could not connect to the database')
+
+# Close communication with the database
+manage_database.db_close(conn)

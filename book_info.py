@@ -1,3 +1,6 @@
+""" Parse information given by the API and ask user for their personnal
+information about the book """
+
 def parse_raw(isbn, data_raw):
     """ Store title and authors information in book_data dictionnary """
     volume_info = data_raw['items'][0]['volumeInfo']
@@ -8,6 +11,7 @@ def parse_raw(isbn, data_raw):
 
     return book_data, authors
 
+
 def has_been_read():
     """ Ask user if they have read the book then return the answer"""
     while True:
@@ -16,10 +20,11 @@ def has_been_read():
             ).lower().strip()
 
         # Stop asking when the answer is 'true' or 'false'
-        if read_status == 'true' or read_status == 'false':
+        if read_status in {'true', 'false'}:
             break
 
     return read_status
+
 
 def rate_book():
     """ Ask user for a rating from 0 to 5 then return the rating"""
@@ -37,10 +42,10 @@ def rate_book():
             print('Please enter a number from 0 to 5')
             continue
         # If the given value is correct, break out of the loop
-        else:
-            break
+        break
 
     return rating
+
 
 def ask_if_read_and_rate(book_data):
     """ Ask user if they have read the book and if they have,

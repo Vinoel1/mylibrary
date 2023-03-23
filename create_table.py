@@ -1,5 +1,8 @@
+""" Initialize PostgreSQL database with the necessary tables """
+
 import psycopg2
 from config import config
+
 
 def create_tables():
     """ Create tables in the PostgreSQL database """
@@ -44,7 +47,7 @@ def create_tables():
         cur.close()
         # commit the changes
         conn.commit()
-    except (Exception, psycopg2.DatabaseError) as error:
+    except psycopg2.Error as error:
         print(error)
     finally:
         if conn is not None:
