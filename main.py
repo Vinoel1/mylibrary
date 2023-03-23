@@ -45,7 +45,7 @@ if conn is not None:
                         ).lower().strip()
 
                     # Stop asking when the answer is 'yes' or 'no'
-                    if delete_book == 'yes' or delete_book == 'no':
+                    if delete_book in {'yes', 'no'}:
                         break
 
                 # Delete book from the database
@@ -84,7 +84,7 @@ if conn is not None:
                 ).lower().strip()
 
             # Stop asking when the answer is 'yes' or 'no'
-            if user_update == 'yes' or user_update == 'no':
+            if user_update in {'yes', 'no'}:
                 break
 
         # Break out of the loop
