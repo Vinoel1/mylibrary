@@ -32,7 +32,7 @@ def db_close(conn):
 def check_book_in_db(conn, isbn):
     """ Check if the ISBN given by the user matches a book that is already
     in the database """
-    sql = """SELECT * FROM books WHERE isbn = %s;"""
+    sql = "SELECT * FROM books WHERE isbn = %s;"
     try:
         cur = conn.cursor(cursor_factory = psycopg2.extras.DictCursor)
         cur.execute(sql, (isbn,))
@@ -54,7 +54,7 @@ def check_book_in_db(conn, isbn):
 
 def check_author_in_db(conn, author):
     """ Check if the author is already in the database """
-    sql = """SELECT author_id FROM authors WHERE name = %s;"""
+    sql = "SELECT author_id FROM authors WHERE name = %s;"
     try:
         cur = conn.cursor()
         cur.execute(sql, (author,))
@@ -71,9 +71,35 @@ def check_author_in_db(conn, author):
         return None
 
 
+def get_author_id(conn, isbn):
+    """ Return identifiers of a book's authors """
+    sql = "SELECT author_id FROM book_authors WHERE isbn = %s;"
+    cur = conn.cursor()
+    cur.execute(sql, (isbn,))
+    rows = cur.fetchall()
+    cur.close()
+
+    return rows
+
+
+def check_books_written(conn, isbn, author_id):
+    """ Check if the author has written another book in the database """
+    sql = "SELECT isbn FROM book_authors WHERE author_id = %s AND isbn != %s;"
+    cur = conn.cursor()
+    cur.execute(sql, (author_id, isbn))
+    rows = cur.fetchall()
+    cur.close()
+
+    # The author has written other books stored in the database
+    if rows is not None:
+        return True
+    # The author has not written another book stored in the database
+    return False
+
+
 def add_book(conn, book_data):
     """ Add a book to the database """
-    sql = """INSERT INTO books VALUES(%s, %s, %s, %s);"""
+    sql = "INSERT INTO books VALUES(%s, %s, %s, %s);"
     cur = conn.cursor()
     cur.execute(
         sql, (
@@ -86,7 +112,7 @@ def add_book(conn, book_data):
 
 def add_author(conn, authors):
     """ Add an author to the database """
-    sql = """INSERT INTO authors(name) VALUES(%s) RETURNING author_id;"""
+    sql = "INSERT INTO authors(name) VALUES(%s) RETURNING author_id;"
     cur = conn.cursor()
     cur.execute(sql, (authors,))
     author_id = cur.fetchone()[0]
@@ -97,7 +123,7 @@ def add_author(conn, authors):
 
 def add_book_author(conn, isbn, author_id):
     """ Add the relation between a book and its authors to the database """
-    sql = """INSERT INTO book_authors VALUES(%s, %s);"""
+    sql = "INSERT INTO book_authors VALUES(%s, %s);"
     cur = conn.cursor()
     cur.execute(sql, (isbn, author_id))
     cur.close()
@@ -127,7 +153,7 @@ def add_all_book_info(conn, book_data, authors):
 
 def modify_book_info(conn, book_data):
     """ Modify user information on a book (read status and rating) """
-    sql = """UPDATE books SET read = %s, rating = %s WHERE isbn = %s;"""
+    sql = "UPDATE books SET read = %s, rating = %s WHERE isbn = %s;"
     try:
         cur = conn.cursor()
         cur.execute(
@@ -146,16 +172,49 @@ def modify_book_info(conn, book_data):
         print('The information could not be modified')
 
 
-def delete_book_info(conn, isbn):
-    """ Delete a book from the database """
-    sql = """DELETE FROM books WHERE isbn = %s;"""
-    try:
+def delete_book_author(conn, isbn):
+    """ Delete the relation between a book and its authors
+    from the database """
+    sql = "DELETE FROM book_authors WHERE isbn = %s;"
+    cur = conn.cursor()
+    cur.execute(sql, (isbn,))
+    cur.close()
+
+
+def delete_author(conn, isbn, author_id):
+    """ Delete an author from the database """
+    # Check if the author has written another book in the database
+    other_books = check_books_written(conn, isbn, author_id)
+    # If not, delete the author
+    if other_books is True:
+        sql = "DELETE FROM authors WHERE author_id = %s;"
         cur = conn.cursor()
-        cur.execute(sql, (isbn,))
-        conn.commit()
+        cur.execute(sql, (author_id,))
         cur.close()
 
-        print('The book has been successfully deleted')
+
+def delete_book(conn, isbn):
+    """ Delete a book from the database """
+    sql = "DELETE FROM books WHERE isbn = %s;"
+    cur = conn.cursor()
+    cur.execute(sql, (isbn,))
+    cur.close()
+
+
+def delete_all_book_info(conn, isbn):
+    """ Delete a book and its authors from the database """
+    deleted = False
+    try:
+        delete_book_author(conn, isbn)
+        author_ids = get_author_id(conn, isbn)
+        for author_id in author_ids:
+            delete_author(conn, isbn, author_id)
+        delete_book(conn, isbn)
+
+        conn.commit()
+        deleted = True
     except psycopg2.Error as error:
         print(error)
-        print('The book could not be deleted')
+        print('The book could not be deleted drom the database')
+
+    return deleted

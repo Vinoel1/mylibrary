@@ -50,7 +50,10 @@ if conn is not None:
 
                 # Delete book from the database
                 if delete_book == 'yes':
-                    manage_database.delete_book_info(conn, isbn)
+                    deleted = manage_database.delete_all_book_info(conn, isbn)
+                    if deleted is True:
+                        print('The book has been successfully deleted from '
+                              'the database')
 
         elif book_data is None:
             with urlopen(api + isbn) as response:
